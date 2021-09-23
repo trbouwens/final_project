@@ -1,4 +1,4 @@
-# # Final Project
+# Final Project
 *Due before the start of class, October 11th (final day of the term)*
 
 For your final project, you'll implement a web application that exhibits understanding of the course materials. 
