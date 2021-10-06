@@ -1,0 +1,24 @@
+{
+  "name": "empty-project",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "scripts": {
+    "clean": "rm dist/bundle.js",
+    "start": "node server.js",
+    "build": "snowpack build"
+  },
+  "dependencies": {
+    "svelte": "^3.43.1",
+    "svelte-loader": "^3.1.2",
+    "svelte-preprocess": "^4.9.8"
+  },
+  "devDependencies": {
+    "snowpack": "^3.8.8",
+    "@snowpack/plugin-svelte": "^3.7.0",
+    "null": "^2.0.0"
+  }
+}
