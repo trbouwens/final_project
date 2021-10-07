@@ -1,3 +1,6 @@
+# Secret keys for database usage
+secrets.js
+.env
 
 .cache/
 coverage/
