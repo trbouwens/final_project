@@ -1,5 +1,7 @@
 {
   "imports": {
+    "@joshnuss/svelte-codemirror": "./@joshnuss/svelte-codemirror.js",
+    "codemirror/mode/javascript/javascript": "./codemirror/mode/javascript/javascript.js",
     "svelte/internal": "./svelte/internal.js"
   }
 }
