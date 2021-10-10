@@ -82,7 +82,7 @@ module.exports.login = [
     passport.authenticate("local", {successRedirect: '/'})
 ];
 
-module.exports.github = passport.authenticate("github", {scope: ["user:email"]});
+module.exports.github = passport.authenticate("github", {scope: ["read:user"]});
 module.exports.githubCallback = [
     passport.authenticate("local", {successRedirect: '/'}),
     (req, res) => res.redirect("/"),
@@ -92,6 +92,3 @@ module.exports.logout = (req, res) => {
     req.logout();
     res.redirect("/login.html");
 };
-
-
-
