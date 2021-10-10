@@ -7,6 +7,7 @@ module.exports = {
     refreshTokens: null,
     clients: null,
     users: null,
+    files: null,
 };
 
 async function initDatabase(cluster) {
@@ -15,6 +16,7 @@ async function initDatabase(cluster) {
     module.exports.refreshTokens = await cluster.collection("refreshTokens");
     module.exports.clients = await cluster.collection("clients");
     module.exports.users = await cluster.collection("users");
+    module.exports.files = await cluster.collection("files");
 }
 
 // Decide where to store database credentials later

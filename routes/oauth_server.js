@@ -203,7 +203,7 @@ module.exports.createUser = async function (username, password) {
         userId = uid.uid(16);
     } while (await collections.users.countDocuments({userId, src: "local"}, {limit: 1}) > 0);
 
-    collections.users.insertOne({userId, username, password, src: "local"});
+    collections.users.insertOne({userId, username, password, src: "local", ownedFiles: []});
     return userId;
 }
 

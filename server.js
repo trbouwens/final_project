@@ -4,7 +4,7 @@ const session = require("express-session");
 const passport = require("passport");
 const secrets = require("./secrets");
 const express = require("express"),
-    app = express()
+    app = express();
 
 app.set("env", process.env.NODE_ENV || "development");
 app.set("port", process.env.PORT || 3000);
@@ -36,6 +36,13 @@ app.get("/auth/github/callback", routes.auth.githubCallback);
 
 app.post("/save", routes.site.saveFile);
 app.post("/load", routes.site.loadFile);
-app.get("/files", routes.site.getFileNames);
+app.get("/files", routes.site.sendFileNames);
+
+app.get("/api/files", routes.site.getOwnedFiles);
+app.post("/api/save", routes.site.saveFileByID);
+app.post("/api/load", routes.site.loadFileByID);
+app.post("/api/create", routes.site.createNewFile);
+app.post("/api/share", routes.site.shareFile);
+app.post("/api/owners", routes.site.getFileOwners);
 
 app.listen(app.get("port"));
