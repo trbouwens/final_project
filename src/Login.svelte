@@ -71,16 +71,16 @@
         </h2>
         <form class="ui large form {$errors.length === 0 ? '' : 'error'}">
             <div class="ui stacked segment">
-                <div class="field">
+                <div class="field {$errors.length === 0 ? '' : 'error'}">
                     <div class="ui left icon input">
                         <i class="user icon"></i>
-                        <input bind:value={username} placeholder="Username">
+                        <input bind:value={username} type="text" placeholder="Username">
                     </div>
                 </div>
-                <div class="field">
+                <div class="field {$errors.length === 0 ? '' : 'error'}">
                     <div class="ui left icon input">
                         <i class="lock icon"></i>
-                        <input bind:value={password} placeholder="Password">
+                        <input bind:value={password} type="password" placeholder="Password">
                     </div>
                 </div>
                 <div on:click={attemptLogin} class="ui left attached large teal submit button">Login</div>
