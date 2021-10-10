@@ -1,10 +1,6 @@
 <script>
     import "semantic-ui-css/semantic.css";
-    // import "semantic-ui-css/themes";
     import {writable} from 'svelte/store';
-    import FaGithub from "svelte-icons/fa/FaGithub.svelte";
-    import FaUser from "svelte-icons/fa/FaUser.svelte";
-    import FaLock from "svelte-icons/fa/FaLock.svelte";
 
     let username = "";
     let password = "";
@@ -66,12 +62,6 @@
     .column {
         max-width: 500px;
     }
-
-    /* FIXME: I have no idea how to properly size these icons */
-    .icon {
-        width: 32px;
-        height: 32px;
-    }
 </style>
 
 <div class="ui middle aligned center aligned grid">
@@ -83,17 +73,13 @@
             <div class="ui stacked segment">
                 <div class="field">
                     <div class="ui left icon input">
-                        <i class="ui icon">
-                            <FaUser/>
-                        </i>
+                        <i class="user icon"></i>
                         <input bind:value={username} placeholder="Username">
                     </div>
                 </div>
                 <div class="field">
                     <div class="ui left icon input">
-                        <i class="ui icon">
-                            <FaLock/>
-                        </i>
+                        <i class="lock icon"></i>
                         <input bind:value={password} placeholder="Password">
                     </div>
                 </div>
@@ -105,9 +91,8 @@
                 </div>
                 <a href="/auth/github">
                     <button class="ui github button">
-                        <i class="ui icon">
-                            <FaGithub/>
-                        </i> GitHub
+                        <i class="github icon"></i>
+                        GitHub
                     </button>
                 </a>
             </div>
