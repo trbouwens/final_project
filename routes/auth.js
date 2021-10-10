@@ -24,24 +24,38 @@ function collectErrors(req, res, next) {
         return next();
     }
 
-    errors.array().map(x => console.log(x.param + ": " + x.msg));
     return res.status(422).json({
         errors: errors.array().map(x => x.msg)
     });
 }
 
 module.exports.signup = [
-    body("username").isAlphanumeric(),
-    body("username").isLength({min: 5, max: 32}),
-    body("password").isLength({min: 5, max: 32}),
+    body("username")
+        .isAlphanumeric()
+        .withMessage("username must be alphanumeric"),
+    body("username")
+        .isLength({min: 5, max: 32})
+        .withMessage("username must be between 5 and 32 characters long"),
+    body("password")
+        .isLength({min: 5, max: 32})
+        .withMessage("password must be between 5 and 32 characters long"),
     collectErrors,
     signup,
 ];
 
-module.exports.login = passport.authenticate("local", {
-    successReturnToOrRedirect: "/",
-    failureRedirect: "/login.html",
-});
+module.exports.login = [
+    body("username")
+        .isAlphanumeric()
+        .withMessage("username must be alphanumeric"),
+    body("username")
+        .isLength({min: 5, max: 32})
+        .withMessage("username must be between 5 and 32 characters long"),
+    body("password")
+        .isLength({min: 5, max: 32})
+        .withMessage("password must be between 5 and 32 characters long"),
+    collectErrors,
+    passport.authenticate("local", { successRedirect: '/' })
+];
 
 module.exports.logout = (req, res) => {
     req.logout();

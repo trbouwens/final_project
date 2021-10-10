@@ -173,7 +173,7 @@ passport.use(new LocalStrategy((username, password, done) => {
 }));
 
 
-passport.serializeUser((user, done) => done(null, user.id));
+passport.serializeUser((user, done) => done(null, user.userId));
 
 passport.deserializeUser((userId, done) => {
     collections.users.findOne({userId})
@@ -229,15 +229,15 @@ passport.use(new BearerStrategy((accessToken, done) => {
 }));
 
 module.exports.createUser = async function (username, password) {
-    let id;
+    let userId;
 
     // Ensure userId is unique
     do {
-        id = uid.uid(16);
-    } while (await collections.users.countDocuments({id}, {limit: 1}) > 0);
+        userId = uid.uid(16);
+    } while (await collections.users.countDocuments({userId}, {limit: 1}) > 0);
 
-    collections.users.insertOne({id, username, password});
-    return id;
+    collections.users.insertOne({userId, username, password});
+    return userId;
 }
 
 module.exports.authorization = [
