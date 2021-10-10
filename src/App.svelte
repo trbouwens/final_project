@@ -1,7 +1,8 @@
 <script>
     import "semantic-ui-css/semantic.css";
-    import 'codemirror/mode/javascript/javascript';
     import CodeMirror from '@joshnuss/svelte-codemirror';
+    import 'codemirror/mode/javascript/javascript';
+    import 'codemirror/lib/codemirror.css';
 
     const config = {
         lineNumbers: true,
@@ -18,16 +19,6 @@
 
     // Request file list be loaded upon page opened
     getFiles();
-
-    function parentResize(parent) {
-        console.log("Resize!");
-        // const parent = event.target;
-        const totalHeight = parent.height;
-        const offset = editor.offsetTop;
-        console.log("Total height:" + parent);
-        console.log("Offset:" + offset);
-        editor.setSize(editor.width, totalHeight - offset);
-    }
 
     function getFiles() {
         fetch('/files', {
