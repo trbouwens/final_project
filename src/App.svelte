@@ -90,6 +90,32 @@
 
         document.body.removeChild(element);
     }
+
+    function makeNew(event){
+        event.preventDefault();
+
+        saveName = 'untitled.js';
+        editor.doc.setValue('');
+        const textToWrite = editor.doc.getValue();
+
+        const json = {
+            name: saveName,
+            code: textToWrite
+        };
+
+        console.log("makeNew");
+
+        fetch("/api/create", {
+            method: "POST",
+            headers: {'Content-Type': 'application/json'},
+            body: JSON.stringify(json)
+        })
+        .then(response => response.json())
+            .then(json => {
+                code = "";
+                getFiles();
+            });
+    }
 </script>
 
 <div class="ui bottom attached segment pushable">
@@ -110,6 +136,9 @@
                         <i class="save icon"></i>
                     </a>
                     <input type="text" placeholder="untitled.js" bind:value={saveName}/>
+                    <a on:click={makeNew}>
+                        <i class="plus icon"></i>
+                    </a>
                     <a on:click={download}>
                         <i class="cloud download icon"></i>
                     </a>
