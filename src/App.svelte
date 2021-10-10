@@ -77,6 +77,19 @@
                 }
             });
     }
+
+    function download(event) {
+        var element = document.createElement('a');
+        element.setAttribute('href', 'data:text/plain;charset=utf-8,' + encodeURIComponent(editor.doc.getValue()));
+        element.setAttribute('download', saveName);
+
+        element.style.display = 'none';
+        document.body.appendChild(element);
+
+        element.click();
+
+        document.body.removeChild(element);
+    }
 </script>
 
 <div class="ui bottom attached segment pushable">
@@ -97,6 +110,9 @@
                         <i class="save icon"></i>
                     </a>
                     <input type="text" placeholder="untitled.js" bind:value={saveName}/>
+                    <a on:click={download}>
+                        <i class="cloud download icon"></i>
+                    </a>
                 </div>
             </h3>
             <div class="codeArea">
