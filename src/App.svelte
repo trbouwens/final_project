@@ -5,7 +5,8 @@
 
     const config = {
         lineNumbers: true,
-        mode: "javascript"
+        mode: "javascript",
+        viewportMargin: Infinity
     };
 
     let editor;
@@ -100,13 +101,14 @@
             </h3>
             <div class="codeArea">
                 <CodeMirror bind:editor options={config} value={code}/>
+                <style> .CodeMirror { height: 800px; } </style>
             </div>
         </div>
     </div>
 </div>
 
 <style>
-    CodeMirror {
-        /*  *Demonic Screeching*  */
+    .codeArea {
+        height: 800px
     }
 </style>
