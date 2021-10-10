@@ -1,5 +1,7 @@
-const oauth = require("./oauth");
+const oauth_server = require("./oauth_server");
+const auth = require("./auth");
 
 module.exports = {
-    oauth
+    oauth_server,
+    auth
 };

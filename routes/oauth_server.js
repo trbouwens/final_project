@@ -8,29 +8,39 @@ const BasicStrategy = require('passport-http').BasicStrategy;
 const ClientPasswordStrategy = require('passport-oauth2-client-password').Strategy;
 const BearerStrategy = require('passport-http-bearer').Strategy;
 const login = require('connect-ensure-login');
+const uid = require("uid");
 
 // Placeholders for mongodb (or other database) collections
-let authorizationCodes = null;
-let accessTokens = null;
-let refreshTokens = null;
-let clients = null;
-let users = null;
+
+const collections = {
+    authorizationCodes: null,
+    accessTokens: null,
+    refreshTokens: null,
+    clients: null,
+    users: null,
+};
+// let collections.accessTokens = null;
+// let collections.refreshTokens = null;
+// let clients = null;
+// let users = null;
+module.exports.dbCollections = collections;
+
 
 module.exports.initDatabase = async function (cluster, secret) {
-    authorizationCodes = await cluster.collection("authorizationCodes");
-    accessTokens = await cluster.collection("accessTokens");
-    refreshTokens = await cluster.collection("refreshTokens");
-    clients = await cluster.collection("clients");
-    users = await cluster.collection("users");
+    collections.authorizationCodes = await cluster.collection("authorizationCodes");
+    collections.accessTokens = await cluster.collection("accessTokens");
+    collections.refreshTokens = await cluster.collection("refreshTokens");
+    collections.clients = await cluster.collection("clients");
+    collections.users = await cluster.collection("users");
 
-    // Ensure the local client is initialized in the clients list
-    await clients.insertOne({
+    collections.clients.insertOne({
         id: "0",
         name: "local-client",
         clientId: "local-client",
         clientSecret: secret,
         isTrusted: true,
-    }).catch(console.log);
+    });
+    console.log("Auth collections connected!");
 }
 
 
@@ -38,35 +48,35 @@ const authServer = oauth2orize.createServer();
 
 
 function issueToken(userId, clientId, done) {
-    users.findOne({ userId })
+    collections.users.findOne({userId})
         .catch(err => done(err))
         .then(user => {
-            const accessToken = oauth2orize.uid(256);
-            const refreshToken = oauth2orize.uid(256);
+            const accessToken = uid.uid(256);
+            const refreshToken = uid.uid(256);
 
             // TODO: This may cause duplicates for a single userId/clientId.
-            accessTokens.insertOne({
+            collections.accessTokens.insertOne({
                 token: accessToken,
                 userId: userId,
                 clientId: clientId,
             })
-                .then(() => refreshTokens.insertOne({
+                .then(() => collections.refreshTokens.insertOne({
                     token: refreshToken,
                     userId: userId,
                     clientId: clientId,
                 }))
                 .catch(err => done(err))
                 .then(() => {
-                    const params = { username: user.name };
+                    const params = {username: user.name};
                     done(null, accessToken, refreshToken, params);
                 });
         });
 }
 
 authServer.grant(oauth2orize.grant.code(function (client, redirectURI, user, ares, done) {
-    const code = oauth2orize.uid(16);
+    const code = uid.uid(16);
 
-    authorizationCodes.insertOne({
+    collections.authorizationCodes.insertOne({
         code,
         clientId: client.id,
         redirectURI,
@@ -81,7 +91,7 @@ authServer.grant(oauth2orize.grant.token((client, user, ares, done) => {
 }));
 
 authServer.exchange(oauth2orize.exchange.code(function (client, code, redirectURI, done) {
-    authorizationCodes.findOne({code})
+    collections.authorizationCodes.findOne({code})
         .catch(err => done(err))
         .then(value => {
             // Authorization code does not match request
@@ -94,14 +104,14 @@ authServer.exchange(oauth2orize.exchange.code(function (client, code, redirectUR
 }));
 
 authServer.exchange(oauth2orize.exchange.password((client, username, password, scope, done) => {
-    clients.findOne({clientId: client.clientId})
+    collections.clients.findOne({clientId: client.clientId})
         .catch(err => done(err))
         .then(foundClient => {
             if (foundClient.clientSecret !== client.clientSecret) {
                 return done(null, false);
             }
 
-            users.findOne({ username })
+            collections.users.findOne({username})
                 .catch(err => done(err))
                 .then(user => {
                     if (password !== user.password) {
@@ -115,7 +125,7 @@ authServer.exchange(oauth2orize.exchange.password((client, username, password, s
 
 authServer.exchange(oauth2orize.exchange.clientCredentials((client, scope, done) => {
     // Validate the client
-    clients.findOne({clientId: client.clientId})
+    collections.clients.findOne({clientId: client.clientId})
         .catch(err => done(err))
         .then(foundClient => {
             if (foundClient.clientSecret !== client.clientSecret) {
@@ -128,7 +138,7 @@ authServer.exchange(oauth2orize.exchange.clientCredentials((client, scope, done)
 }));
 
 authServer.exchange(oauth2orize.exchange.refreshToken((client, refreshToken, scope, done) => {
-    refreshTokens.findOne({ token: refreshToken })
+    collections.refreshTokens.findOne({token: refreshToken})
         .catch(err => done(err))
         .then(token => {
             issueToken(token.userId, client.id, (err, accessToken, refreshToken, params) => {
@@ -141,8 +151,8 @@ authServer.exchange(oauth2orize.exchange.refreshToken((client, refreshToken, sco
                     userId: token.userId,
                 };
 
-                accessTokens.remove(schema)
-                    .then(() => refreshTokens.remove(schema))
+                collections.accessTokens.remove(schema)
+                    .then(() => collections.refreshTokens.remove(schema))
                     .catch(err => done(err, null, null))
                     .then(() => done(null, accessToken, refreshToken, params));
             })
@@ -151,10 +161,10 @@ authServer.exchange(oauth2orize.exchange.refreshToken((client, refreshToken, sco
 
 
 passport.use(new LocalStrategy((username, password, done) => {
-    users.findOne({ username })
+    collections.users.findOne({username})
         .catch(err => done(err))
         .then(user => {
-            if (password !== user.password) {
+            if (!user || password !== user.password) {
                 return done(null, false);
             }
 
@@ -163,16 +173,16 @@ passport.use(new LocalStrategy((username, password, done) => {
 }));
 
 
-passport.serializeUser((user, done) =>  done(null, user.id));
+passport.serializeUser((user, done) => done(null, user.id));
 
 passport.deserializeUser((userId, done) => {
-    users.findOne({ userId })
+    collections.users.findOne({userId})
         .catch(err => done(err))
         .then(user => done(null, user));
 });
 
 function verifyClient(clientId, clientSecret, done) {
-    clients.findOne({ clientId })
+    collections.clients.findOne({clientId})
         .catch(err => done(err))
         .then(client => {
             if (clientSecret !== client.clientSecret) {
@@ -187,17 +197,33 @@ passport.use(new BasicStrategy(verifyClient));
 passport.use(new ClientPasswordStrategy(verifyClient));
 
 passport.use(new BearerStrategy((accessToken, done) => {
-    accessTokens.findOne({ token: accessToken })
-        .catch(done)
+    collections.accessTokens.findOne({token: accessToken})
+        .catch(err => done(err))
         .then(token => {
+            if (!token) {
+                return done(null, false);
+            }
+
             if (token.userId) {
-                users.findOne({userId: token.userId })
+                collections.users.findOne({userId: token.userId})
                     .catch(done)
-                    .then(user => done(null, user, { scope: "*" }));
+                    .then(user => {
+                        if (!user) {
+                            return done(null, false);
+                        }
+
+                        done(null, user, {scope: "*"});
+                    });
             } else {
-                clients.findOne({clientId: token.clientId })
+                collections.clients.findOne({clientId: token.clientId})
                     .catch(done)
-                    .then(client => done(null, client, { scope: "*" }));
+                    .then(client => {
+                        if (!client) {
+                            return done(null, false);
+                        }
+
+                        done(null, client, {scope: "*"});
+                    });
             }
         });
 }));
@@ -207,17 +233,17 @@ module.exports.createUser = async function (username, password) {
 
     // Ensure userId is unique
     do {
-        id = oauth2orize.uid(16);
-    } while (await users.countDocuments({ id }, { limit: 1 }) > 0);
+        id = uid.uid(16);
+    } while (await collections.users.countDocuments({id}, {limit: 1}) > 0);
 
-    users.insertOne({ id, username, password });
+    collections.users.insertOne({id, username, password});
     return id;
 }
 
 module.exports.authorization = [
     login.ensureLoggedIn(),
     authServer.authorization((clientId, redirectURI, done) => {
-        clients.findOne({ clientId })
+        collections.clients.findOne({clientId})
             .catch(err => done(err))
             // TODO: Example recommends verifying redirectURI
             .then(client => done(null, client, redirectURI));
@@ -227,7 +253,7 @@ module.exports.authorization = [
             return done(null, true);
         }
 
-        accessTokens.findOne({
+        collections.accessTokens.findOne({
             clientId: client.clientId,
             userId: user.id,
         })
@@ -243,8 +269,7 @@ module.exports.decision = [
 ];
 
 module.exports.token = [
-    passport.authenticate(['basic', 'oauth2-client-password'], { session: false }),
+    passport.authenticate(['basic', 'oauth2-client-password'], {session: false}),
     authServer.token(),
     authServer.errorHandler(),
 ];
-
