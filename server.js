@@ -3,6 +3,7 @@ const bodyParser = require("body-parser");
 const session = require("express-session");
 const passport = require("passport");
 const mongodb = require("mongodb");
+let secrets = require("./secrets");
 const express = require("express"),
     app = express()
 
@@ -16,19 +17,6 @@ app.use(express.static("build"))
 app.use(cookieParser());
 app.use(bodyParser.json({extended: false}));
 app.use(bodyParser.urlencoded({extended: false}));
-
-
-let secrets;
-if (app.get("env") === "development") {
-    secrets = {
-        secret: "placeholder secret",
-        resave: false,
-        saveUninitialized: false,
-    };
-} else {
-    secrets = require("./secrets");
-}
-
 app.use(session(secrets));
 app.use(passport.initialize());
 app.use(passport.session());
@@ -59,5 +47,7 @@ app.post("/auth/signup", routes.auth.signup);
 app.post("/auth/login", routes.auth.login);
 app.get("/auth/logout", routes.auth.logout);
 
+app.get("/auth/github", routes.auth.github);
+app.get("/auth/github/callback", routes.auth.githubCallback);
 
 app.listen(app.get("port"));

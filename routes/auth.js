@@ -1,6 +1,9 @@
 const {body, validationResult} = require("express-validator");
 const oauth_server = require("./oauth_server");
 const passport = require("passport");
+const GitHubStrategy = require("passport-github2").Strategy;
+const secrets = require("../secrets");
+
 
 function signup(req, res) {
     oauth_server.dbCollections.users
@@ -29,6 +32,28 @@ function collectErrors(req, res, next) {
     });
 }
 
+
+passport.use(new GitHubStrategy(secrets.auth.github, function (accessToken, refreshToken, profile, done) {
+    oauth_server.dbCollections.users
+        .findOneAndUpdate({
+            query: {
+                userId: profile.id,
+                src: "github",
+            },
+            update: {
+                $setOnInsert: {
+                    userId: profile.id,
+                    src: "github",
+                    username: profile.email,
+                }
+            },
+            returnOriginal: false,
+            upsert: true
+        })
+        .catch(err => done(err))
+        .then(user => done(null, user));
+}));
+
 module.exports.signup = [
     body("username")
         .isAlphanumeric()
@@ -54,11 +79,19 @@ module.exports.login = [
         .isLength({min: 5, max: 32})
         .withMessage("password must be between 5 and 32 characters long"),
     collectErrors,
-    passport.authenticate("local", { successRedirect: '/' })
+    passport.authenticate("local", {successRedirect: '/'})
+];
+
+module.exports.github = passport.authenticate("github", {scope: ["user:email"]});
+module.exports.githubCallback = [
+    passport.authenticate("local", {successRedirect: '/'}),
+    (req, res) => res.redirect("/"),
 ];
 
 module.exports.logout = (req, res) => {
     req.logout();
     res.redirect("/login.html");
 };
+
+
 
