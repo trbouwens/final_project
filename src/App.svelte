@@ -1,115 +1,102 @@
 <script>
-  import 'codemirror/mode/javascript/javascript'
-  import CodeMirror from '@joshnuss/svelte-codemirror'
+    import 'codemirror/mode/javascript/javascript'
+    import CodeMirror from '@joshnuss/svelte-codemirror'
 
-  let editor
-  let code = "const x = 42"
+    let editor;
+    let code = "const x = 42";
+    let filesPromise = ["loading..."];
+    let saveName = "";
 
-  function getFiles() {
-    const p = fetch( '/files', {
-      method:'GET'
-    })
-    .then( response => response.json() )
-    .then( json => {
-      promise = json.files
-      return json.files
-    })
-    return p
-  }
+    // Request file list be loaded upon page opened
+    getFiles();
 
-  function load(x) {
-    let file = x.f
-
-    let json = {
-      name: file
+    function getFiles() {
+        fetch('/files', {
+            method: 'GET'
+        })
+            .then(response => response.json())
+            .then(json => filesPromise = json.files);
     }
-    let body = JSON.stringify(json);
 
-    fetch("/load", {
-  			method: "POST",
-        headers: { 'Content-Type': 'application/json' },
-  			body
-  	})
-    .then( response => response.json() )
-    .then( json => {
-      code = json.code
-      console.log(json)
-    })
-    // code = "const x = 69420\nconst y = 21"
-  }
+    function loadFile(event) {
+        const name = event.target.getAttribute("name");
 
-  function save() {
-    var textToWrite = editor.doc.getValue();
+        fetch("/load", {
+            method: "POST",
+            headers: {'Content-Type': 'application/json'},
+            body: JSON.stringify({name})
+        })
+            .then(response => response.json())
+            .then(json => {
+                code = json.code;
+                console.log(json);
+            });
+    }
 
-    const input = document.getElementById("saveName"),
-      json = {
-        name: input.elements[0].value,
-        code: textToWrite
-      },
-      body = JSON.stringify(json);
+    function saveFile(event) {
+        event.preventDefault();
+        const textToWrite = editor.doc.getValue();
 
-    console.log("Saving file")
+        const json = {
+            name: saveName,
+            code: textToWrite
+        };
 
-    fetch("/save", {
-  			method: "POST",
-        headers: { 'Content-Type': 'application/json' },
-  			body
-  	})
-    .then( function( response ) {
-  			if (response.status === 200) {
-  					console.log(body);
-            getFiles()
-  			} else {
-  					return response.text();
-  			}
-  	})
+        console.log("Saving file")
 
-    return true
-  }
-
-let promise = ["test"]
-
+        fetch("/save", {
+            method: "POST",
+            headers: {'Content-Type': 'application/json'},
+            body: JSON.stringify(json)
+        })
+            .then(function (response) {
+                if (response.status === 200) {
+                    getFiles();
+                } else {
+                    return response.text();
+                }
+            });
+    }
 </script>
 
-<div class = "box">
-  <div class = "sidebar">
-    {#await promise then files}
-      <ul>
-        {#each files as f}
-          <!-- USE CSS TO MAKE SIDEBAR ITEMS CLICKABLE. <a> IS ONLY TEMPORARY -->
-          <li on:click={() => load({f})}> <a href="#"> {f}.js </a> </li>
-        {/each}
-      </ul>
-    {/await}
-  </div>
+<div class="box">
+    <div class="sidebar">
+        {#await filesPromise then files}
+            <ul>
+                {#each files as f}
+                    <li name={f} on:click={loadFile}>{f}.js</li>
+                {/each}
+            </ul>
+        {/await}
+    </div>
 
-  <div class = "codebox">
-    <CodeMirror bind:editor options={{ lineNumbers: true, mode: "javascript"}} class="editor" value={code}/>
-  </div>
+    <div class="codebox">
+        <CodeMirror bind:editor options={{ lineNumbers: true, mode: "javascript"}} class="editor" value={code}/>
+    </div>
 </div>
 
-<form class="forms" id="saveName" action="">
-  <input type="text" id="fileName" />
+<form action="">
+    <input type="text" bind:value={saveName}/>
 </form>
-<button on:click={save}>
-	Save
+<button on:click={saveFile}>
+    Save
 </button>
 
 <style>
 
-.box {
-  display: flex;
-  flex-direction: row;
-  justify-content: flex-start;
-  flex-wrap: nowrap;
-}
+    .box {
+        display: flex;
+        flex-direction: row;
+        justify-content: flex-start;
+        flex-wrap: nowrap;
+    }
 
-:global(.editor) {
-  /* Set height, width, borders, and global font properties here */
-  font-family: monospace;
-  height: 300px;
-  direction: ltr;
-  color: var(--cm-text-color);
-  background: var(--cm-background-color);
-}
- </style>
+    :global(.editor) {
+        /* Set height, width, borders, and global font properties here */
+        font-family: monospace;
+        height: 300px;
+        direction: ltr;
+        color: var(--cm-text-color);
+        background: var(--cm-background-color);
+    }
+</style>
