@@ -21,10 +21,17 @@
     getFiles();
 
     function getFiles() {
-        fetch('/files', {
+        fetch('/api/files', {
             method: 'GET'
         })
-            .then(response => response.json())
+            .then(res => {
+                // Follow redirect for when user is not logged in
+                if (res.redirected) {
+                    location.replace(res.url);
+                }
+
+                return res.json();
+            })
             .then(json => filesPromise = json.files);
     }
 
