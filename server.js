@@ -2,8 +2,7 @@ const cookieParser = require("cookie-parser");
 const bodyParser = require("body-parser");
 const session = require("express-session");
 const passport = require("passport");
-const mongodb = require("mongodb");
-let secrets = require("./secrets");
+const secrets = require("./secrets");
 const express = require("express"),
     app = express()
 
@@ -20,20 +19,6 @@ app.use(passport.initialize());
 app.use(passport.session());
 
 const routes = require("./routes");
-
-// Decide where to store database credentials later
-const dbUser = process.env.DB_USER || secrets.database.user;
-const dbPass = process.env.DB_USER || secrets.database.password;
-const dbHost = process.env.DB_USER || secrets.database.host;
-
-const uri = "mongodb+srv://" + dbUser + ":" + dbPass + "@" + dbHost;
-const dbClient = new mongodb.MongoClient(uri, {useNewUrlParser: true, useUnifiedTopology: true});
-
-// Block until database is initialized
-dbClient.connect().then(() => {
-    console.log("Connected to database!");
-    routes.oauth_server.initDatabase(dbClient.db("final_project_cluster"), secrets.secret);
-});
 
 // Public facing oauth2 hooks
 app.get("/dialog/authorize", routes.oauth_server.authorization);

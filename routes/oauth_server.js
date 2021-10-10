@@ -9,40 +9,10 @@ const ClientPasswordStrategy = require('passport-oauth2-client-password').Strate
 const BearerStrategy = require('passport-http-bearer').Strategy;
 const login = require('connect-ensure-login');
 const uid = require("uid");
-
-// Placeholders for mongodb (or other database) collections
-
-const collections = {
-    authorizationCodes: null,
-    accessTokens: null,
-    refreshTokens: null,
-    clients: null,
-    users: null,
-};
-
-module.exports.dbCollections = collections;
-
-
-module.exports.initDatabase = async function (cluster, secret) {
-    collections.authorizationCodes = await cluster.collection("authorizationCodes");
-    collections.accessTokens = await cluster.collection("accessTokens");
-    collections.refreshTokens = await cluster.collection("refreshTokens");
-    collections.clients = await cluster.collection("clients");
-    collections.users = await cluster.collection("users");
-
-    collections.clients.insertOne({
-        id: "0",
-        name: "local-client",
-        clientId: "local-client",
-        clientSecret: secret,
-        isTrusted: true,
-    });
-    console.log("Auth collections connected!");
-}
+const collections = require("../database");
 
 
 const authServer = oauth2orize.createServer();
-
 
 function issueToken(userId, clientId, done) {
     collections.users.findOne({userId, src: "local"})

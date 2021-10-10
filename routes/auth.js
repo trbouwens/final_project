@@ -3,10 +3,11 @@ const oauth_server = require("./oauth_server");
 const passport = require("passport");
 const GitHubStrategy = require("passport-github2").Strategy;
 const secrets = require("../secrets");
+const collections = require("../database");
 
 
 function signup(req, res) {
-    oauth_server.dbCollections.users
+    collections.users
         .countDocuments({username: req.body.username}, {limit: 1})
         .then(num_users => {
             // Verify that a user does not already exist with this username
@@ -34,7 +35,7 @@ function collectErrors(req, res, next) {
 
 
 passport.use(new GitHubStrategy(secrets.auth.github, function (accessToken, refreshToken, profile, done) {
-    oauth_server.dbCollections.users
+    collections.users
         .findOneAndUpdate({
             query: {
                 userId: profile.id,
