@@ -1,7 +1,9 @@
 {
   "mount": {
     "dist": "/",
-    "src": "/"
+    "src": "/",
+    "node_modules/semantic-ui-css/themes": "/themes",
+    "node_modules/semantic-ui-css/components": "/components"
   },
   "plugins": [
     "@snowpack/plugin-svelte"
