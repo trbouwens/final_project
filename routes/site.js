@@ -42,10 +42,11 @@ module.exports.getOwnedFiles = [
             return collections.files.find(
                 {_id: {$in: user.ownedFiles}},
                 {name: 1, _id: 1}
-            ).toArray();
-        }).then(ownedFiles => {
-            return res.status(200).json(ownedFiles);
-        });
+            ).toArray()
+            .then(ownedFiles => {
+                return res.status(200).json(ownedFiles);
+            });
+        })
     }
 ];
 
