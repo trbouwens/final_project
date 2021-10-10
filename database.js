@@ -21,8 +21,8 @@ async function initDatabase(cluster) {
 
 // Decide where to store database credentials later
 const dbUser = process.env.DB_USER || secrets.database.user;
-const dbPass = process.env.DB_USER || secrets.database.password;
-const dbHost = process.env.DB_USER || secrets.database.host;
+const dbPass = process.env.DB_PASS || secrets.database.password;
+const dbHost = process.env.DB_HOST || secrets.database.host;
 
 const uri = "mongodb+srv://" + dbUser + ":" + dbPass + "@" + dbHost;
 const dbClient = new mongodb.MongoClient(uri, {useNewUrlParser: true, useUnifiedTopology: true});
