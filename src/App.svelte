@@ -30,7 +30,7 @@
     }
 
     function getFiles() {
-        fetch('/files', {
+        fetch('/api/files', {
             method: 'GET'
         })
             .then(response => response.json())

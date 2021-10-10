@@ -45,4 +45,6 @@ app.post("/api/create", routes.site.createNewFile);
 app.post("/api/share", routes.site.shareFile);
 app.post("/api/owners", routes.site.getFileOwners);
 
+app.get("/login", (req, res) => res.redirect("/login.html"));
+
 app.listen(app.get("port"));
