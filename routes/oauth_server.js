@@ -19,10 +19,7 @@ const collections = {
     clients: null,
     users: null,
 };
-// let collections.accessTokens = null;
-// let collections.refreshTokens = null;
-// let clients = null;
-// let users = null;
+
 module.exports.dbCollections = collections;
 
 
@@ -48,7 +45,7 @@ const authServer = oauth2orize.createServer();
 
 
 function issueToken(userId, clientId, done) {
-    collections.users.findOne({userId})
+    collections.users.findOne({userId, src: "local"})
         .catch(err => done(err))
         .then(user => {
             const accessToken = uid.uid(256);
@@ -111,7 +108,7 @@ authServer.exchange(oauth2orize.exchange.password((client, username, password, s
                 return done(null, false);
             }
 
-            collections.users.findOne({username})
+            collections.users.findOne({username, src: "local"})
                 .catch(err => done(err))
                 .then(user => {
                     if (password !== user.password) {
@@ -161,7 +158,7 @@ authServer.exchange(oauth2orize.exchange.refreshToken((client, refreshToken, sco
 
 
 passport.use(new LocalStrategy((username, password, done) => {
-    collections.users.findOne({username})
+    collections.users.findOne({username, src: "local"})
         .catch(err => done(err))
         .then(user => {
             if (!user || password !== user.password) {
@@ -176,7 +173,7 @@ passport.use(new LocalStrategy((username, password, done) => {
 passport.serializeUser((user, done) => done(null, user.userId));
 
 passport.deserializeUser((userId, done) => {
-    collections.users.findOne({userId})
+    collections.users.findOne({userId, src: "local"})
         .catch(err => done(err))
         .then(user => done(null, user));
 });
@@ -205,7 +202,7 @@ passport.use(new BearerStrategy((accessToken, done) => {
             }
 
             if (token.userId) {
-                collections.users.findOne({userId: token.userId})
+                collections.users.findOne({userId: token.userId, src: "local"})
                     .catch(done)
                     .then(user => {
                         if (!user) {
@@ -234,9 +231,9 @@ module.exports.createUser = async function (username, password) {
     // Ensure userId is unique
     do {
         userId = uid.uid(16);
-    } while (await collections.users.countDocuments({userId}, {limit: 1}) > 0);
+    } while (await collections.users.countDocuments({userId, src: "local"}, {limit: 1}) > 0);
 
-    collections.users.insertOne({userId, username, password});
+    collections.users.insertOne({userId, username, password, src: "local"});
     return userId;
 }
 
