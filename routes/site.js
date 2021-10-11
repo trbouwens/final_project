@@ -22,7 +22,7 @@ module.exports.saveFileByID = [
     login.ensureLoggedIn({redirectTo: "/login.html"}),
     checkFileAccess,
     function (req, res) {
-        collections.files.update(
+        collections.files.updateOne(
             {_id: new mongodb.ObjectId(req.body.id)},
             {
                 $set: {
@@ -71,8 +71,8 @@ module.exports.createNewFile = [
             code: req.body.code,
         };
 
-        collections.files.insert(newFile)
-            .then(() => collections.users.update(
+        collections.files.insertOne(newFile)
+            .then(() => collections.users.updateOne(
                 {_id: new mongodb.ObjectId(req.user._id)},
                 {$push: {ownedFiles: newFile._id}}
             ))
