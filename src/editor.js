@@ -9,4 +9,5 @@ const app = new App({
 
 window.app = app;
 
-export default app;
+// export default app;
+export { default as default } from './Component.svelte'
