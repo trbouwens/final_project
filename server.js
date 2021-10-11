@@ -46,11 +46,6 @@ app.get("/auth/logout", routes.auth.logout);
 app.get("/auth/github", routes.auth.github);
 app.get("/auth/github/callback", routes.auth.githubCallback);
 
-
-app.post("/save", routes.site.saveFile);
-app.post("/load", routes.site.loadFile);
-app.get("/files", routes.site.sendFileNames);
-
 app.get("/api/files", routes.site.getOwnedFiles);
 app.post("/api/save", routes.site.saveFileByID);
 app.post("/api/delete", routes.site.deleteFileByID);

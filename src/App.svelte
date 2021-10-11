@@ -134,7 +134,8 @@
 
     function deleteFile(event){
         event.preventDefault();
-         const json = {
+
+        const json = {
             id: currentID,
         };
 
@@ -145,7 +146,9 @@
         })
             .then(function (response) {
                 if (response.status === 200) {
-                    currentID = null;
+                    if(currentID === filesPromise[0]._id){
+                        makeNew(event)
+                    }
                     getFiles();
                 } else {
                     return response.text();
@@ -157,8 +160,6 @@
     function fileSelected(event){
         let uploadFile = event.target.files[0];
 
-        //title of file
-        console.log(uploadFile);
         saveName = uploadFile.name;
         code = "loading...";
 
