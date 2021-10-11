@@ -33,12 +33,12 @@ Jasper Meggitt:
   - Hosted the server on Digital Ocean
 
 Mago Sheehy:
-  - Got the Delete and Save buttons working.
+  - Got the Delete and download buttons working.
   - Implemented the share file feature.
   - Fixed miscellaneous async and other bugs.
 
 Owen Blaufuss:
-  - Got the Upload, download and Delete Buttons working.
+  - Got the Upload, save and Delete Buttons working.
   - Fixed miscellaneous async and other bugs.
 
 Tyler Bouwens:
