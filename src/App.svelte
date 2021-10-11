@@ -1,13 +1,8 @@
 <script>
     import "semantic-ui-css/semantic.css";
     import 'codemirror/mode/javascript/javascript';
-    import CodeMirror from '@joshnuss/svelte-codemirror';
-
-    const config = {
-        lineNumbers: true,
-        mode: "javascript",
-        viewportMargin: Infinity
-    };
+    import CodeMirror from './index'
+    import { HighlightAuto } from "svelte-highlight";
 
     let editor;
     let code = "const x = 42";
@@ -15,6 +10,13 @@
     let saveName = "untitled.js";
 
     let currentFile = "unnamed.js";
+
+    const config = {
+        lineNumbers: true,
+        mode: "javascript",
+        viewportMargin: Infinity,
+        value: code
+    };
 
     // Request file list be loaded upon page opened
     getFiles();
@@ -48,7 +50,7 @@
         })
             .then(response => response.json())
             .then(json => {
-                code = json.code;
+                config.value = json.code;
                 console.log(json);
             });
     }
@@ -116,7 +118,7 @@
                 </div>
             </h3>
             <div class="codeArea">
-                <CodeMirror bind:editor options={config} value={code}/>
+                <CodeMirror class="editor" bind:editor options={config}/>
                 <style> .CodeMirror { height: 800px; } </style>
             </div>
         </div>
