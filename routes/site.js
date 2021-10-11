@@ -5,16 +5,16 @@ const collections = require("../database");
 
 function checkFileAccess(req, res, next) {
     const _id = new mongodb.ObjectId(req.user._id);
-    return collections.users.countDocuments(
-        {_id, ownedFiles: {$all: [req.body.id]}},
-        {limit: 1})
-        .then(numFound => {
-            if (numFound !== 1) {
+    collections.users.findOne({_id}).then(user => {
+        collections.files.countDocuments(
+            {$and:[{_id: new mongodb.ObjectId(req.body.id)}, {_id: {$in: user.ownedFiles}}]}
+        ).then(count => {
+            if (count === 0){
                 return res.status(403).send("File either does not exist or is not shared");
             }
-
             next();
-        });
+        })
+    })
 }
 
 module.exports.deleteFileByID = [
@@ -28,7 +28,7 @@ module.exports.deleteFileByID = [
 
 module.exports.saveFileByID = [
     login.ensureLoggedIn({redirectTo: "/login.html"}),
-    //checkFileAccess,
+    checkFileAccess,
     function (req, res) {
         collections.files.updateOne(
             {_id: new mongodb.ObjectId(req.body.id)},
@@ -61,7 +61,7 @@ module.exports.getOwnedFiles = [
 
 module.exports.loadFileByID = [
     login.ensureLoggedIn({redirectTo: "/login.html"}),
-    //checkFileAccess, //TODO why doesn't this work
+    checkFileAccess,
     function (req, res) {
         collections.files.findOne(
             {_id: new mongodb.ObjectId(req.body.id)}
@@ -97,7 +97,7 @@ module.exports.shareFile = [
     function (req, res) {
         collections.users.updateOne(
             {username: req.body.username},
-            {$push: {ownedFiles: req.body.id}}
+            {$push: {ownedFiles: new mongodb.ObjectId(req.body.id)}}
         ).then(result => {
             if (result.modifiedCount === 0) {
                 return res.status(404).send("User does not exist");

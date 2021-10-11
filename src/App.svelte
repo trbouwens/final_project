@@ -98,10 +98,6 @@
         document.body.removeChild(element);
     }
 
-    function upload(event){
-
-    }
-
     function makeNew(event){
         event.preventDefault();
 
@@ -171,17 +167,17 @@
             code = event.target.result;
 
             //now save as new file
-        const json = {
-            name: saveName,
-            code
-        };
+            const json = {
+                name: saveName,
+                code
+             };
 
-        fetch("/api/create", {
-            method: "POST",
-            headers: {'Content-Type': 'application/json'},
-            body: JSON.stringify(json)
-        })
-         .then(function (response) {
+            fetch("/api/create", {
+                method: "POST",
+                headers: {'Content-Type': 'application/json'},
+                body: JSON.stringify(json)
+            })
+            .then(function (response) {
                 if (response.status === 200) {
                     getFiles();
                 } else {
@@ -189,8 +185,24 @@
                 }
             });
         }
+    }
 
-
+    function share(event){
+        event.preventDefault()
+        const sharee = document.getElementById("sharee").value;
+        let json = {username: sharee, id: currentID}
+        fetch("/api/share", {
+            method: "POST",
+            headers: {'Content-Type': 'application/json'},
+            body: JSON.stringify(json)
+        }).then(function (response) {
+                if (response.status === 200) {
+                    currentID = null;
+                    getFiles();
+                } else {
+                    return response.text();
+                }
+            });
     }
 </script>
 
@@ -227,6 +239,11 @@
                     <a on:click={download}>
                         <i class="cloud download icon"></i>
                     </a>
+                    <a on:click={share}>
+                        <i class="share icon"></i>
+                    </a>
+                    <label for="sharing" id="shareLabel">Share with:</label>
+                    <input type="text" id="sharee" name="sharing">
                 </div>
             </h3>
             <div class="codeArea">
@@ -240,5 +257,11 @@
 <style>
     .codeArea {
         height: 800px
+    }
+    #shareLabel {
+        font-size: medium;
+    }
+    #sharee {
+        border: 2px solid grey
     }
 </style>
