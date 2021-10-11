@@ -150,6 +150,25 @@
                 }
             });
     }
+
+    function share(event){
+        event.preventDefault()
+        const sharee = document.getElementById("sharee").value;
+        let json = {username: sharee, id: currentID}
+
+        fetch("/api/share", {
+            method: "POST",
+            headers: {'Content-Type': 'application/json'},
+            body: JSON.stringify(json)
+        }).then(function (response) {
+                if (response.status === 200) {
+                    currentID = null;
+                    getFiles();
+                } else {
+                    return response.text();
+                }
+            });
+    }
 </script>
 
 <div class="ui bottom attached segment pushable">
@@ -179,6 +198,11 @@
                     <a on:click={download}>
                         <i class="cloud download icon"></i>
                     </a>
+                    <a on:click={share}>
+                        <i class="share icon"></i>
+                    </a>
+                    <label for="sharing" id="shareLabel">Share with:</label>
+                    <input type="text" id="sharee" name="sharing">
                 </div>
             </h3>
             <div class="codeArea">
@@ -192,5 +216,11 @@
 <style>
     .codeArea {
         height: 800px
+    }
+    #shareLabel {
+        font-size: medium;
+    }
+    #sharee {
+        border: 2px solid grey
     }
 </style>

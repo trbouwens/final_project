@@ -97,7 +97,7 @@ module.exports.shareFile = [
     function (req, res) {
         collections.users.updateOne(
             {username: req.body.username},
-            {$push: {ownedFiles: req.body.id}}
+            {$push: {ownedFiles: new mongodb.ObjectId(req.body.id)}}
         ).then(result => {
             if (result.modifiedCount === 0) {
                 return res.status(404).send("User does not exist");
