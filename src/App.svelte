@@ -98,6 +98,10 @@
         document.body.removeChild(element);
     }
 
+    function upload(event){
+
+    }
+
     function makeNew(event){
         event.preventDefault();
 
@@ -150,13 +154,52 @@
                 }
             });
     }
+    
+    let fileinput;
+    function fileSelected(event){
+        let uploadFile = event.target.files[0];
+
+        //title of file
+        console.log(uploadFile);
+        saveName = uploadFile.name;
+        code = "loading...";
+
+        //contents of file
+        let reader = new FileReader();
+        reader.readAsText(uploadFile)
+        reader.onload = event=>{
+            code = event.target.result;
+
+            //now save as new file
+        const json = {
+            name: saveName,
+            code
+        };
+
+        fetch("/api/create", {
+            method: "POST",
+            headers: {'Content-Type': 'application/json'},
+            body: JSON.stringify(json)
+        })
+         .then(function (response) {
+                if (response.status === 200) {
+                    getFiles();
+                } else {
+                    return response.text();
+                }
+            });
+        }
+
+
+    }
 </script>
 
 <div class="ui bottom attached segment pushable">
     <div class="ui visible inverted left vertical sidebar menu" id="filesMenu">
         {#await filesPromise then files}
             {#each files as file}
-                <a name={file.name} id={file._id} on:click={loadFile} class="{file._id === currentID ? 'active' : ''} item">
+                <a name={file.name} id={file._id} on:click={loadFile}
+                class="{file._id === currentID ? 'active' : ''} item">
                     {file.name}
                 </a>
             {/each}
@@ -175,6 +218,11 @@
                     </a>
                      <a on:click={deleteFile}>
                         <i class="trash alternate icon"></i>
+                    </a>
+                    <a on:click={()=>{fileinput.click();}}>
+                        <i class="cloud upload icon"></i>
+                         <input style="display:none" type="file" accept=".js, .txt" 
+                         on:change={(e)=>fileSelected(e)} bind:this={fileinput}>
                     </a>
                     <a on:click={download}>
                         <i class="cloud download icon"></i>
