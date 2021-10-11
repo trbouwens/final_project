@@ -45,7 +45,9 @@
 
 
     function loadFile(event) {
-        currentID = event.target.getAttribute("id");
+        if(event.target.getAttribute("id") !== null) {
+            currentID = event.target.getAttribute("id");
+        }
         saveName = "loading...";
         code = "";
 
@@ -57,7 +59,7 @@
             .then(response => response.json())
             .then(json => {
                 saveName = json.name;
-                code = json.code;         
+                code = json.code;
             });
     }
 
@@ -150,7 +152,7 @@
                 }
             });
     }
-    
+
     let fileinput;
     function fileSelected(event){
         let uploadFile = event.target.files[0];
@@ -233,7 +235,7 @@
                     </a>
                     <a on:click={()=>{fileinput.click();}}>
                         <i class="cloud upload icon"></i>
-                         <input style="display:none" type="file" accept=".js, .txt" 
+                         <input style="display:none" type="file" accept=".js, .txt"
                          on:change={(e)=>fileSelected(e)} bind:this={fileinput}>
                     </a>
                     <a on:click={download}>
