@@ -38,11 +38,12 @@ Mago Sheehy:
   - Fixed miscellaneous async and other bugs.
 
 Owen Blaufuss:
-  - Got the Upload, save and Delete Buttons working.
+  - Got the Upload and Delete Buttons working.
+  - Got the Add New file working
   - Fixed miscellaneous async and other bugs.
 
 Tyler Bouwens:
-  - Made the initial prototype of the app
+  - Made the initial prototype of the app, including renaming, switching, and editing files.
   - Got CodeMirror working, and files being sent to and from the server to edit.
   - Got code-coloring to work
   - Fixed miscellaneous async and other bugs.
