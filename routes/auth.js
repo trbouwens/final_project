@@ -4,6 +4,7 @@ const passport = require("passport");
 const GitHubStrategy = require("passport-github2").Strategy;
 const secrets = require("../secrets");
 const collections = require("../database");
+const login = require("connect-ensure-login");
 
 
 function signup(req, res) {
@@ -80,12 +81,12 @@ module.exports.login = [
         .isLength({min: 5, max: 32})
         .withMessage("password must be between 5 and 32 characters long"),
     collectErrors,
-    passport.authenticate("local", {successRedirect: '/'})
+    passport.authenticate("local", {successRedirect: '/editor.html'})
 ];
 
 module.exports.github = passport.authenticate("github", {scope: ["read:user"]});
 module.exports.githubCallback = [
-    passport.authenticate("local", {successRedirect: '/'}),
+    passport.authenticate("local", {successRedirect: '/editor.html'}),
     (req, res) => res.redirect("/"),
 ];
 

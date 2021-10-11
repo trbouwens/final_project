@@ -1,3 +1,4 @@
+const login = require("connect-ensure-login");
 const cookieParser = require("cookie-parser");
 const bodyParser = require("body-parser");
 const session = require("express-session");
@@ -10,7 +11,7 @@ app.set("env", process.env.NODE_ENV || "development");
 app.set("port", process.env.PORT || 3000);
 console.log("Using environment: " + app.get("env"));
 
-app.use(express.static("build"))
+
 app.use(cookieParser());
 app.use(bodyParser.json({extended: false}));
 app.use(bodyParser.urlencoded({extended: false}));
@@ -19,6 +20,18 @@ app.use(passport.initialize());
 app.use(passport.session());
 
 const routes = require("./routes");
+
+// Simple middleware to ensure user is logged in before serving editor page
+app.use(function (req, res, next) {
+    if (req.method === "GET" && (req.url === "/editor.html" || req.url === "/" || req.url === "/index.html")) {
+        return login.ensureLoggedIn({redirectTo: "/login.html"})(req, res, next);
+    }
+
+    next();
+});
+
+app.use(express.static("build"));
+
 
 // Public facing oauth2 hooks
 app.get("/dialog/authorize", routes.oauth_server.authorization);
@@ -40,9 +53,13 @@ app.get("/files", routes.site.sendFileNames);
 
 app.get("/api/files", routes.site.getOwnedFiles);
 app.post("/api/save", routes.site.saveFileByID);
+app.post("/api/delete", routes.site.deleteFileByID);
 app.post("/api/load", routes.site.loadFileByID);
 app.post("/api/create", routes.site.createNewFile);
 app.post("/api/share", routes.site.shareFile);
 app.post("/api/owners", routes.site.getFileOwners);
+
+app.get("/login", (req, res) => res.redirect("/login.html"));
+app.get("/", (req, res) => res.redirect("/login.html"));
 
 app.listen(app.get("port"));
