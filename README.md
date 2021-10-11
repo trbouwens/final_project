@@ -33,7 +33,7 @@ Jasper Meggitt:
   - Hosted the server on Digital Ocean
 
 Mago Sheehy:
-  - Also got the Upload and Add New File buttons working.
+  - Got the Delete and Save buttons working.
   - Implemented the share file feature.
   - Fixed miscellaneous async and other bugs.
 
