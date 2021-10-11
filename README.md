@@ -31,13 +31,16 @@ Jasper Meggitt:
   - Implemented the Semantic UI framework and designed the basic layout of the app.
   - Fixed miscellaneous async and other bugs.
   - Hosted the server on Digital Ocean
+
 Mago Sheehy:
   - Also got the Upload and Add New File buttons working.
   - Implemented the share file feature.
   - Fixed miscellaneous async and other bugs.
+
 Owen Blaufuss:
   - Got the Upload, download and Delete Buttons working.
   - Fixed miscellaneous async and other bugs.
+
 Tyler Bouwens:
   - Made the initial prototype of the app
   - Got CodeMirror working, and files being sent to and from the server to edit.
