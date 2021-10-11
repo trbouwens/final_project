@@ -53,6 +53,7 @@ app.get("/files", routes.site.sendFileNames);
 
 app.get("/api/files", routes.site.getOwnedFiles);
 app.post("/api/save", routes.site.saveFileByID);
+app.post("/api/delete", routes.site.deleteFileByID);
 app.post("/api/load", routes.site.loadFileByID);
 app.post("/api/create", routes.site.createNewFile);
 app.post("/api/share", routes.site.shareFile);

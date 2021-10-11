@@ -17,6 +17,14 @@ function checkFileAccess(req, res, next) {
         });
 }
 
+module.exports.deleteFileByID = [
+    login.ensureLoggedIn({redirectTo: "/login.html"}),
+    function (req, res) {
+        collections.files.deleteOne(
+            {_id: new mongodb.ObjectId(req.body.id)}
+        ).then(() => res.status(200).send("File deleted successfully"));
+    }
+]
 
 module.exports.saveFileByID = [
     login.ensureLoggedIn({redirectTo: "/login.html"}),

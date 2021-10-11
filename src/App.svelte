@@ -11,7 +11,7 @@
     };
 
     let editor;
-    let code = "const x = 42";
+    let code = "";
     let filesPromise = ["loading..."];
     let saveName = "untitled.js";
 
@@ -35,10 +35,14 @@
             .then(json => {
                 filesPromise = json;
                 if (currentID === null){
+                    //if no valid file is currently selected, select the first
                     currentID = json[0]._id;
+                    const menu = document.getElementById("filesMenu");
+                    menu.children.item(0).click();
                 }
             });
     }
+
 
     function loadFile(event) {
         currentID = event.target.getAttribute("id");
@@ -125,6 +129,27 @@
                 newPlaceholder.remove();
             });
     }
+
+    function deleteFile(event){
+        event.preventDefault();
+         const json = {
+            id: currentID,
+        };
+
+        fetch("/api/delete", {
+            method: "POST",
+            headers: {'Content-Type': 'application/json'},
+            body: JSON.stringify(json)
+        })
+            .then(function (response) {
+                if (response.status === 200) {
+                    currentID = null;
+                    getFiles();
+                } else {
+                    return response.text();
+                }
+            });
+    }
 </script>
 
 <div class="ui bottom attached segment pushable">
@@ -141,12 +166,15 @@
         <div class="ui basic bottom attached segment">
             <h3 class="ui header">
                 <div class="ui transparent icon input">
+                    <a on:click={makeNew}>
+                        <i class="plus icon"></i>
+                    </a>
+                    <input type="text" placeholder="untitled.js" bind:value={saveName}/>
                     <a on:click={saveFile}>
                         <i class="save icon"></i>
                     </a>
-                    <input type="text" placeholder="untitled.js" bind:value={saveName}/>
-                    <a on:click={makeNew}>
-                        <i class="plus icon"></i>
+                     <a on:click={deleteFile}>
+                        <i class="trash alternate icon"></i>
                     </a>
                     <a on:click={download}>
                         <i class="cloud download icon"></i>
