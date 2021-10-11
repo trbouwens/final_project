@@ -239,11 +239,11 @@
                     <a on:click={download}>
                         <i class="cloud download icon"></i>
                     </a>
+                    <label for="sharing" id="shareLabel">Share with:</label>
+                    <input type="text" id="sharee" name="sharing" style="background-color:grey; width:300px">
                     <a on:click={share}>
                         <i class="share icon"></i>
                     </a>
-                    <label for="sharing" id="shareLabel">Share with:</label>
-                    <input type="text" id="sharee" name="sharing">
                 </div>
             </h3>
             <div class="codeArea">
@@ -260,8 +260,5 @@
     }
     #shareLabel {
         font-size: medium;
-    }
-    #sharee {
-        border: 2px solid grey
     }
 </style>
