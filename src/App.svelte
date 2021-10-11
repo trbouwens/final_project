@@ -60,7 +60,6 @@
             .then(json => {
                 saveName = json.name;
                 config.value = json.code;
-                console.log(json);
             });
     }
 
