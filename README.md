@@ -50,6 +50,7 @@ Tyler Bouwens:
 
 ## Project Video
 https://drive.google.com/file/d/1k00O_N9bjZCybzWKvnTiilqdOY3qo1WZ/view?usp=sharing
+https://youtu.be/XRm4evdDj9I
 
 ## How to run on localhost
 
