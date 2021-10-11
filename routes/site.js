@@ -20,7 +20,7 @@ function checkFileAccess(req, res, next) {
 
 module.exports.saveFileByID = [
     login.ensureLoggedIn({redirectTo: "/login.html"}),
-    checkFileAccess,
+    //checkFileAccess,
     function (req, res) {
         collections.files.updateOne(
             {_id: new mongodb.ObjectId(req.body.id)},

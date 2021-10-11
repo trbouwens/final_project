@@ -15,7 +15,6 @@
     let filesPromise = ["loading..."];
     let saveName = "untitled.js";
 
-    let currentFile = null;
     let currentID = null;
 
     // Request file list be loaded upon page opened
@@ -35,9 +34,6 @@
             })
             .then(json => {
                 filesPromise = json;
-                if (currentFile === null){
-                    currentFile = json[0].name;
-                }
                 if (currentID === null){
                     currentID = json[0]._id;
                 }
@@ -45,8 +41,9 @@
     }
 
     function loadFile(event) {
-        currentFile = event.target.getAttribute("name");
         currentID = event.target.getAttribute("id");
+        saveName = "loading...";
+        code = "";
 
         fetch("/api/load", {
             method: "POST",
@@ -55,6 +52,7 @@
         })
             .then(response => response.json())
             .then(json => {
+                saveName = json.name;
                 code = json.code;         
             });
     }
@@ -64,13 +62,14 @@
         const textToWrite = editor.doc.getValue();
 
         const json = {
+            id: currentID,
             name: saveName,
             code: textToWrite
         };
 
         console.log("Saving file");
 
-        fetch("/save", {
+        fetch("/api/save", {
             method: "POST",
             headers: {'Content-Type': 'application/json'},
             body: JSON.stringify(json)
