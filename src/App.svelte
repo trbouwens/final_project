@@ -2,7 +2,6 @@
     import "semantic-ui-css/semantic.css";
     import 'codemirror/mode/javascript/javascript';
     import CodeMirror from './index'
-    import { HighlightAuto } from "svelte-highlight";
 
     let editor;
     let code = "";
