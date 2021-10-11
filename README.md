@@ -22,6 +22,7 @@ The only thing of note is that a shared file being edited simultaneously can lea
 - Our first challenge was getting Svelte and CodeMirror to communicate well and in a way that allowed the live updating of files, as well as always displaying the existing live files.
 - Another challenge was getting OAuth to work, as the tricky process alone, not to mention the bugs and issues that arose while going through it, took up a lot of time.
 - Asynchronous behavior also caused a lot of hiccoughs in how we displayed files, and/or handled their uploading and removal. There were several bug-fixing sessions devoted to getting the file explorer and code editor working with the promises of other functions.
+- CodeMirror was very problematic when it came to code colouring, and working nicely with Svelte. The two existing Svlete CodeMirror libraries didn't allow for theming or CodeColoring, so it was a a lot of work to try to figure out a way around this, and get something colored. We tried Highlight.js, but it als wasn't working nicely with Svelte, so in the end we simply rebased our CodeMirror implementation from scratch using their Open Source Svelte editor as a framework.
 
 ## What each group member was responsible for designing / developing:
 Jasper Meggitt:
