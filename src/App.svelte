@@ -15,7 +15,8 @@
     let filesPromise = ["loading..."];
     let saveName = "untitled.js";
 
-    let currentFile = "unnamed.js";
+    let currentFile = null;
+    let currentID = null;
 
     // Request file list be loaded upon page opened
     getFiles();
@@ -32,22 +33,29 @@
 
                 return res.json();
             })
-            .then(json => filesPromise = json.files);
+            .then(json => {
+                filesPromise = json;
+                if (currentFile === null){
+                    currentFile = json[0].name;
+                }
+                if (currentID === null){
+                    currentID = json[0]._id;
+                }
+            });
     }
 
     function loadFile(event) {
         currentFile = event.target.getAttribute("name");
-        saveName = currentFile;
+        currentID = event.target.getAttribute("id");
 
-        fetch("/load", {
+        fetch("/api/load", {
             method: "POST",
             headers: {'Content-Type': 'application/json'},
-            body: JSON.stringify({name: currentFile})
+            body: JSON.stringify({id: currentID})
         })
             .then(response => response.json())
             .then(json => {
-                code = json.code;
-                console.log(json);
+                code = json.code;         
             });
     }
 
@@ -120,8 +128,8 @@
     <div class="ui visible inverted left vertical sidebar menu">
         {#await filesPromise then files}
             {#each files as file}
-                <a name={file} on:click={loadFile} class="{file === currentFile ? 'active' : ''} item">
-                    {file}
+                <a name={file.name} id={file._id} on:click={loadFile} class="{file._id === currentID ? 'active' : ''} item">
+                    {file.name}
                 </a>
             {/each}
         {/await}

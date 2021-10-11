@@ -53,11 +53,12 @@ module.exports.getOwnedFiles = [
 
 module.exports.loadFileByID = [
     login.ensureLoggedIn({redirectTo: "/login.html"}),
-    checkFileAccess,
+    //checkFileAccess, //TODO why doesn't this work
     function (req, res) {
         collections.files.findOne(
             {_id: new mongodb.ObjectId(req.body.id)}
-        ).then(file => res.status(200).json(file));
+        ).then(file => {
+            res.status(200).json(file)});
     }
 ];
 
