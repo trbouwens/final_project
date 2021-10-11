@@ -67,8 +67,6 @@
             code: textToWrite
         };
 
-        console.log("Saving file");
-
         fetch("/api/save", {
             method: "POST",
             headers: {'Content-Type': 'application/json'},
@@ -100,31 +98,37 @@
         event.preventDefault();
 
         saveName = 'untitled.js';
-        editor.doc.setValue('');
-        const textToWrite = editor.doc.getValue();
+        code = "";
+        // placeholder for aesthetics
+        const menu = document.getElementById("filesMenu");
+        const newPlaceholder = document.createElement('a');
+        newPlaceholder.textContent = saveName;
+        newPlaceholder.classList.add("item");
+        menu.appendChild(newPlaceholder);
 
         const json = {
             name: saveName,
-            code: textToWrite
+            code
         };
-
-        console.log("makeNew");
 
         fetch("/api/create", {
             method: "POST",
             headers: {'Content-Type': 'application/json'},
             body: JSON.stringify(json)
         })
-        .then(response => response.json())
-            .then(json => {
-                code = "";
-                getFiles();
+         .then(function (response) {
+                if (response.status === 200) {
+                    getFiles();
+                } else {
+                    return response.text();
+                }
+                newPlaceholder.remove();
             });
     }
 </script>
 
 <div class="ui bottom attached segment pushable">
-    <div class="ui visible inverted left vertical sidebar menu">
+    <div class="ui visible inverted left vertical sidebar menu" id="filesMenu">
         {#await filesPromise then files}
             {#each files as file}
                 <a name={file.name} id={file._id} on:click={loadFile} class="{file._id === currentID ? 'active' : ''} item">
