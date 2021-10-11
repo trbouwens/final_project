@@ -89,12 +89,12 @@
                 <div class="ui horizontal divider">
                     Or
                 </div>
-                <a href="/auth/github">
-                    <button class="ui github button">
+                <button class="ui github button">
+                    <a href="https://github.com/login/oauth/authorize?client_id=6256bfaa417e8c70d5df">
                         <i class="github icon"></i>
                         GitHub
-                    </button>
-                </a>
+                    </a>
+                </button>
             </div>
             <div id="errors" class="ui error message">
                 <ul class="list">

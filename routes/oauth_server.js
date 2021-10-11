@@ -143,7 +143,7 @@ passport.use(new LocalStrategy((username, password, done) => {
 passport.serializeUser((user, done) => done(null, user.userId));
 
 passport.deserializeUser((userId, done) => {
-    collections.users.findOne({userId, src: "local"})
+    collections.users.findOne({userId})
         .catch(err => done(err))
         .then(user => done(null, user));
 });

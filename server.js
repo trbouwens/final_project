@@ -4,6 +4,8 @@ const bodyParser = require("body-parser");
 const session = require("express-session");
 const passport = require("passport");
 const secrets = require("./secrets");
+const morgan = require("morgan");
+const cors = require("cors");
 const express = require("express"),
     app = express();
 
@@ -11,7 +13,14 @@ app.set("env", process.env.NODE_ENV || "development");
 app.set("port", process.env.PORT || 3000);
 console.log("Using environment: " + app.get("env"));
 
+// Ignore cors
+app.all("/*", function(req, res, next) {
+    res.header("Access-Control-Allow-Origin", "*");
+    next();
+});
 
+app.use(cors());
+app.use(morgan("tiny"));
 app.use(cookieParser());
 app.use(bodyParser.json({extended: false}));
 app.use(bodyParser.urlencoded({extended: false}));

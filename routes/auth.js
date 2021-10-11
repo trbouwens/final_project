@@ -36,24 +36,39 @@ function collectErrors(req, res, next) {
 
 
 passport.use(new GitHubStrategy(secrets.auth.github, function (accessToken, refreshToken, profile, done) {
+    console.log("Got response from github strategy");
     collections.users
         .findOneAndUpdate({
-            query: {
                 userId: profile.id,
                 src: "github",
             },
-            update: {
+            {
                 $setOnInsert: {
                     userId: profile.id,
                     src: "github",
-                    username: profile.email,
+                    username: profile.username,
+                    ownedFiles: []
                 }
             },
-            returnOriginal: false,
-            upsert: true
-        })
+            {
+                returnOriginal: false,
+                returnNewDocument: true,
+                new: true,
+                upsert: true
+            })
         .catch(err => done(err))
-        .then(user => done(null, user));
+        .then(() => {
+            // MongoDB docs seem highly inconsistent regarding how to return the new object.
+            // Depending on the driver, shell, or version, options might include returnOriginal, returnNewDocument, or
+            // new. However none seem to give the desired effect. So instead just do a second query.
+            collections.users.findOne({
+                userId: profile.id,
+                src: "github",
+            }).then(user => {
+                console.log("Got user: " + JSON.stringify(user));
+                done(null, user);
+            });
+        });
 }));
 
 module.exports.signup = [
@@ -84,10 +99,10 @@ module.exports.login = [
     passport.authenticate("local", {successRedirect: '/editor.html'})
 ];
 
-module.exports.github = passport.authenticate("github", {scope: ["read:user"]});
+module.exports.github = passport.authenticate("github", {scope: ["read:user", "user:email"]});
 module.exports.githubCallback = [
-    passport.authenticate("local", {successRedirect: '/editor.html'}),
-    (req, res) => res.redirect("/"),
+    passport.authenticate("github", {failureRedirect: '/login.html'}),
+    (req, res) => res.redirect("/editor.html"),
 ];
 
 module.exports.logout = (req, res) => {
