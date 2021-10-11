@@ -19,7 +19,7 @@ function checkFileAccess(req, res, next) {
 
 
 module.exports.saveFileByID = [
-    login.ensureLoggedIn(),
+    login.ensureLoggedIn({redirectTo: "/login.html"}),
     checkFileAccess,
     function (req, res) {
         collections.files.update(
@@ -35,7 +35,7 @@ module.exports.saveFileByID = [
 ];
 
 module.exports.getOwnedFiles = [
-    login.ensureLoggedIn(),
+    login.ensureLoggedIn({redirectTo: "/login.html"}),
     function (req, res) {
         const _id = new mongodb.ObjectId(req.user._id);
         collections.users.findOne({_id}).then(user => {
@@ -52,7 +52,7 @@ module.exports.getOwnedFiles = [
 
 
 module.exports.loadFileByID = [
-    login.ensureLoggedIn(),
+    login.ensureLoggedIn({redirectTo: "/login.html"}),
     checkFileAccess,
     function (req, res) {
         collections.files.findOne(
@@ -64,7 +64,7 @@ module.exports.loadFileByID = [
 
 // Create a new file
 module.exports.createNewFile = [
-    login.ensureLoggedIn(),
+    login.ensureLoggedIn({redirectTo: "/login.html"}),
     function (req, res) {
         const newFile = {
             name: req.body.name,
@@ -83,7 +83,7 @@ module.exports.createNewFile = [
 ];
 
 module.exports.shareFile = [
-    login.ensureLoggedIn(),
+    login.ensureLoggedIn({redirectTo: "/login.html"}),
     checkFileAccess,
     function (req, res) {
         collections.users.updateOne(
@@ -100,7 +100,7 @@ module.exports.shareFile = [
 ];
 
 module.exports.getFileOwners = [
-    login.ensureLoggedIn(),
+    login.ensureLoggedIn({redirectTo: "/login.html"}),
     checkFileAccess,
     function (req, res) {
         collections.users.find(

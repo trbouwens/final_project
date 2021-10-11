@@ -208,7 +208,7 @@ module.exports.createUser = async function (username, password) {
 }
 
 module.exports.authorization = [
-    login.ensureLoggedIn(),
+    login.ensureLoggedIn({redirectTo: "/login.html"}),
     authServer.authorization((clientId, redirectURI, done) => {
         collections.clients.findOne({clientId})
             .catch(err => done(err))
@@ -231,7 +231,7 @@ module.exports.authorization = [
 ];
 
 module.exports.decision = [
-    login.ensureLoggedIn(),
+    login.ensureLoggedIn({redirectTo: "/login.html"}),
     authServer.decision(),
 ];
 
