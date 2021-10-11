@@ -3,10 +3,12 @@ const oauth_server = require("./oauth_server");
 const passport = require("passport");
 const GitHubStrategy = require("passport-github2").Strategy;
 const secrets = require("../secrets");
+const collections = require("../database");
+const login = require("connect-ensure-login");
 
 
 function signup(req, res) {
-    oauth_server.dbCollections.users
+    collections.users
         .countDocuments({username: req.body.username}, {limit: 1})
         .then(num_users => {
             // Verify that a user does not already exist with this username
@@ -34,7 +36,7 @@ function collectErrors(req, res, next) {
 
 
 passport.use(new GitHubStrategy(secrets.auth.github, function (accessToken, refreshToken, profile, done) {
-    oauth_server.dbCollections.users
+    collections.users
         .findOneAndUpdate({
             query: {
                 userId: profile.id,
@@ -79,12 +81,12 @@ module.exports.login = [
         .isLength({min: 5, max: 32})
         .withMessage("password must be between 5 and 32 characters long"),
     collectErrors,
-    passport.authenticate("local", {successRedirect: '/'})
+    passport.authenticate("local", {successRedirect: '/editor.html'})
 ];
 
 module.exports.github = passport.authenticate("github", {scope: ["read:user"]});
 module.exports.githubCallback = [
-    passport.authenticate("local", {successRedirect: '/'}),
+    passport.authenticate("local", {successRedirect: '/editor.html'}),
     (req, res) => res.redirect("/"),
 ];
 

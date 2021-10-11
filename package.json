@@ -12,6 +12,8 @@
     "build": "snowpack build"
   },
   "dependencies": {
+    "@joshnuss/svelte-codemirror": "^0.2.6",
+    "codemirror": "^5.63.1",
     "body-parser": "^1.19.0",
     "connect-ensure-login": "^0.1.1",
     "cookie-parser": "^1.4.5",
@@ -27,6 +29,7 @@
     "passport-local": "^1.0.0",
     "passport-oauth2-client-password": "^0.1.2",
     "svelte": "^3.43.1",
+    "svelte-codemirror": "^1.2.1",
     "svelte-loader": "^3.1.2",
     "svelte-preprocess": "^4.9.8",
     "uid": "^2.0.0"
@@ -36,6 +39,7 @@
     "express": "^4.17.1",
     "null": "^2.0.0",
     "semantic-ui-css": "^2.4.1",
-    "snowpack": "^3.8.8"
+    "snowpack": "^3.8.8",
+    "svelte-highlight": "^5.0.0"
   }
 }

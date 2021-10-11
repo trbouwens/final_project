@@ -9,40 +9,10 @@ const ClientPasswordStrategy = require('passport-oauth2-client-password').Strate
 const BearerStrategy = require('passport-http-bearer').Strategy;
 const login = require('connect-ensure-login');
 const uid = require("uid");
-
-// Placeholders for mongodb (or other database) collections
-
-const collections = {
-    authorizationCodes: null,
-    accessTokens: null,
-    refreshTokens: null,
-    clients: null,
-    users: null,
-};
-
-module.exports.dbCollections = collections;
-
-
-module.exports.initDatabase = async function (cluster, secret) {
-    collections.authorizationCodes = await cluster.collection("authorizationCodes");
-    collections.accessTokens = await cluster.collection("accessTokens");
-    collections.refreshTokens = await cluster.collection("refreshTokens");
-    collections.clients = await cluster.collection("clients");
-    collections.users = await cluster.collection("users");
-
-    collections.clients.insertOne({
-        id: "0",
-        name: "local-client",
-        clientId: "local-client",
-        clientSecret: secret,
-        isTrusted: true,
-    });
-    console.log("Auth collections connected!");
-}
+const collections = require("../database");
 
 
 const authServer = oauth2orize.createServer();
-
 
 function issueToken(userId, clientId, done) {
     collections.users.findOne({userId, src: "local"})
@@ -233,12 +203,12 @@ module.exports.createUser = async function (username, password) {
         userId = uid.uid(16);
     } while (await collections.users.countDocuments({userId, src: "local"}, {limit: 1}) > 0);
 
-    collections.users.insertOne({userId, username, password, src: "local"});
+    collections.users.insertOne({userId, username, password, src: "local", ownedFiles: []});
     return userId;
 }
 
 module.exports.authorization = [
-    login.ensureLoggedIn(),
+    login.ensureLoggedIn({redirectTo: "/login.html"}),
     authServer.authorization((clientId, redirectURI, done) => {
         collections.clients.findOne({clientId})
             .catch(err => done(err))
@@ -261,7 +231,7 @@ module.exports.authorization = [
 ];
 
 module.exports.decision = [
-    login.ensureLoggedIn(),
+    login.ensureLoggedIn({redirectTo: "/login.html"}),
     authServer.decision(),
 ];
 
