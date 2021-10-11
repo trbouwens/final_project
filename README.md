@@ -48,7 +48,7 @@ Tyler Bouwens:
   - Fixed miscellaneous async and other bugs.
 
 ## Project Video
-<PLACEHOLDER>
+https://drive.google.com/file/d/1k00O_N9bjZCybzWKvnTiilqdOY3qo1WZ/view?usp=sharing
 
 ## How to run on localhost
 
